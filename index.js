@@ -2,6 +2,7 @@ const express = require("express");
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const cors = require("cors");
 const qrcode = require("qrcode");
+const puppeteer = require('puppeteer');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,6 +23,10 @@ app.post("/webhook", async (req, res) => {
     client = new Client({
       authStrategy: new LocalAuth({
         dataPath: "/tmp/.wwebjs_auth",
+        puppeteer: {
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          executablePath: puppeteer.executablePath()
+        }
       }),
     });
 
