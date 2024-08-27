@@ -1,5 +1,6 @@
 const express = require("express");
 const { Client, LocalAuth } = require("whatsapp-web.js");
+const cors = require("cors");
 const qrcode = require("qrcode");
 
 const app = express();
@@ -9,6 +10,7 @@ let client;
 let qrCodeDataUrl = "";
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("Bot is running");
