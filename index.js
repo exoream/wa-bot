@@ -20,7 +20,9 @@ app.get("/", (req, res) => {
 app.post("/webhook", async (req, res) => {
   if (!client) {
     client = new Client({
-      authStrategy: new LocalAuth(),
+      authStrategy: new LocalAuth({
+        dataPath: "/tmp/.wwebjs_auth",
+      }),
     });
 
     client.on("qr", async (qr) => {
@@ -85,9 +87,9 @@ app.get("/qr", (req, res) => {
   if (qrCodeDataUrl) {
     try {
       const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
-      const imgBuffer = Buffer.from(base64Data, 'base64');
-  
-      res.setHeader('Content-Type', 'image/png');
+      const imgBuffer = Buffer.from(base64Data, "base64");
+
+      res.setHeader("Content-Type", "image/png");
       res.send(imgBuffer);
     } catch (error) {
       console.error("Error generating QR code image:", error);
