@@ -79,7 +79,7 @@ app.post("/webhook", async (req, res) => {
   res.status(200).send("Webhook received");
 });
 
-app.get("/", (req, res) => {
+app.get("/qr", (req, res) => {
   if (qrCodeDataUrl) {
     res.send(`
       <html>
