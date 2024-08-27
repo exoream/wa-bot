@@ -1,12 +1,13 @@
 const express = require("express");
 const { Client, LocalAuth } = require("whatsapp-web.js");
 const cors = require("cors");
-const qrcode = require("qrcode-terminal");
+const qrcode = require("qrcode");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 let client;
+let qrCodeUrl = '';
 
 app.use(cors());
 app.use(express.json());
@@ -25,7 +26,11 @@ app.post("/webhook", async (req, res) => {
     });
 
     client.on("qr", async (qr) => {
-      qrcode.generate(qr, {small: true});
+      try {
+        qrCodeUrl = await qrcode.toDataURL(qr);
+      } catch (error) {
+        console.error("Gagal menghasilkan QR code:", error);
+      }
     });
 
     client.on("ready", () => {
@@ -78,6 +83,14 @@ app.post("/webhook", async (req, res) => {
   res.status(200).send("Webhook received");
 });
 
+// Endpoint untuk mendapatkan QR code
+app.get("/qr", (req, res) => {
+  if (qrCodeUrl) {
+    res.redirect(qrCodeUrl);
+  } else {
+    res.status(404).send("QR code not available");
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
