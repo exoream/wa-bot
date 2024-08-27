@@ -9,8 +9,8 @@ const port = process.env.PORT || 3000;
 let client;
 let qrCodeDataUrl = "";
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Bot is running");
@@ -83,29 +83,18 @@ app.post("/webhook", async (req, res) => {
 
 app.get("/qr", (req, res) => {
   if (qrCodeDataUrl) {
-    res.send(`
-      <html>
-        <body>
-          <h1>QR Code</h1>
-          <img src="${qrCodeDataUrl}" alt="QR Code">
-          <p>Scan this QR code to authenticate with WhatsApp.</p>
-        </body>
-      </html>
-    `);
+    try {
+      const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
+      const imgBuffer = Buffer.from(base64Data, 'base64');
+  
+      res.setHeader('Content-Type', 'image/png');
+      res.send(imgBuffer);
+    } catch (error) {
+      console.error("Error generating QR code image:", error);
+      res.status(500).send("Internal Server Error");
+    }
   } else {
-    res.send(`
-      <html>
-        <body>
-          <h1>Generating QR Code...</h1>
-          <p>QR Code is being generated. Please wait.</p>
-          <script>
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          </script>
-        </body>
-      </html>
-    `);
+    res.status(404).send("QR Code not available");
   }
 });
 
