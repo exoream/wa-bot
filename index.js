@@ -20,6 +20,10 @@ app.post("/webhook", async (req, res) => {
   if (!client) {
     client = new Client({
       authStrategy: new LocalAuth(),
+      puppeteer: {
+        headless: true,
+        args: ["--no-sandbox"],
+      },
     });
 
     client.on("qr", async (qr) => {
